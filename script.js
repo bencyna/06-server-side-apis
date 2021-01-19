@@ -1,8 +1,8 @@
 $(document).ready(function () {
   var cities = [];
-  console.log(cities);
+  var cityBtns = [];
   getItems();
-
+  console.log(cityBtns[0].val());
   function renderCities() {
     $(".list-items").html("");
 
@@ -23,6 +23,7 @@ $(document).ready(function () {
       button.attr("data-attribute", p);
       li.append(button);
       $(".list-items").prepend(li);
+      cityBtns.push(button);
     }
   }
 
@@ -59,15 +60,17 @@ $(document).ready(function () {
   });
 
   var cityName = "";
-
-  $(".cities").click(function () {
-    cityName = $(".cities").val();
-    console.log("button clicked");
-  });
-
   $(".searchBtn").click(function () {
     cityName = $("#cityInput").val().trim();
     console.log("search clicked");
+  });
+
+  cityBtns.forEach(function (cityBtns) {
+    cityBtns.click(function () {
+      cityName = cityBtns.val();
+      console.log("button clicked");
+      console.log(cityBtns.val());
+    });
   });
 
   function displayWeather(event) {
@@ -211,7 +214,10 @@ $(document).ready(function () {
     });
   }
 
-  $(".searchBtn").click(displayWeather);
+  // $(".cities").click(displayWeather);
+  cityBtns.forEach(function (cityBtns) {
+    cityBtns.click(displayWeather);
+  });
 
-  $(".cities").click(displayWeather);
+  $(".searchBtn").click(displayWeather);
 });
