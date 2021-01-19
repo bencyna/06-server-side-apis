@@ -1,19 +1,23 @@
 $(document).ready(function () {
+  // adding cities searched to cities array
   var cities = [];
+  // adding buttons of cities to buttons array
   var cityBtns = [];
+  // call getting items from local storage
   getItems();
-  console.log(cityBtns[0].val());
+  // displaying cities search to page
   function renderCities() {
     $(".list-items").html("");
 
     for (var i = 0; i < cities.length; i++) {
       for (var j = 0; j < i; j++) {
         if (cities[i] === cities[j] || cities[i] == "") {
-          cities.splice(i, 1);
+          cities.splice(i, 1); // removes duplicates and empty searches
         }
       }
     }
-
+    // Displaying cities by creating li elemtns for them to display
+    // Adding buttons to the cityBtns array
     for (var p = 0; p < cities.length; p++) {
       var city = cities[p];
 
@@ -26,30 +30,31 @@ $(document).ready(function () {
       cityBtns.push(button);
     }
   }
-
+  // get items from local storage to be displayed
   function getItems() {
     var storedCities = JSON.parse(localStorage.getItem("cities"));
     if (storedCities !== null) {
       cities = storedCities;
     }
+    // Displays already searched cities upon reload
     renderCities();
   }
-
+  // Storing items from cities array in local storage
   function storeCities() {
     localStorage.setItem("cities", JSON.stringify(cities));
   }
-
+  //  storing input in the cities array
   function storeInputs() {
     var cityLabel = $("#cityInput").val();
     cities.push(cityLabel);
+    // error check for empty searches
     if (cityLabel == "") {
       return;
     }
-
     storeCities();
     renderCities();
   }
-
+  // adding clear button to remove previously searched cities
   $("#clearBtn").click(function (event) {
     var element = event.target;
     var index = element.parentElement.getAttribute("data-attribute");
@@ -59,12 +64,14 @@ $(document).ready(function () {
     renderCities();
   });
 
+  // setting city name to an empty string
   var cityName = "";
+  // if search button is clicked city name is given the value of input
   $(".searchBtn").click(function () {
     cityName = $("#cityInput").val().trim();
     console.log("search clicked");
   });
-
+  // if a previoulsy searched city is clicked the value of city name is the value of the button
   cityBtns.forEach(function (cityBtns) {
     cityBtns.click(function () {
       cityName = cityBtns.val();
@@ -73,13 +80,14 @@ $(document).ready(function () {
     });
   });
 
+  // function for ajax call and display
   function displayWeather(event) {
     event.preventDefault();
-
+    // empty previous city chosen
     $(".keyDetails").empty();
     $(".fiveDayTitle").empty();
     $(".fiveDay").empty();
-
+    // setting api key to retrieve information from
     var APIKey = "2b07c349d7b932546c42e60806d40881";
     queryURLKeyDetails =
       "http://api.openweathermap.org/data/2.5/weather?q=" +
@@ -91,35 +99,42 @@ $(document).ready(function () {
       cityName +
       "&appid=" +
       APIKey;
+    // ajax call to get desired information
     $.ajax({
       url: queryURLKeyDetails,
       method: "GET",
+      // after ajax has been retrieved this function can execute
     }).then(function (response) {
+      // getting local temperature
       var temperatureTemp = response.main.temp - 273;
+      // rounding it to 2 decimal places
       temperatureTemp = Math.round(temperatureTemp * 100) / 100;
       var temperature = $("<li>").text(
         "Temperature: " + temperatureTemp + " C°"
       );
+      // getting humidty value within a li element
       var humidity = $("<li>").text(
         "Humidity: " + response.main.humidity + "%"
       );
-
+      // getting windspeed and adding to li element
       var windSpeed = $("<li>").text(
         "Wind Speed: " + response.wind.speed + "unit of measurement"
       );
-
+      // adding ul for data to be displayed in
       var keyDetailsList = $("<ul>").attr("class", "keyDetailsList");
 
+      // appending data to ul above
       keyDetailsList.append(temperature);
       keyDetailsList.append(humidity);
       keyDetailsList.append(windSpeed);
 
+      // appendning ul above to the page
       $(".keyDetails").append(keyDetailsList);
 
+      // getting latitude and longitude coordinates for uv index
       var lat = response.coord.lat;
 
       var lon = response.coord.lon;
-
       var queryURLuv =
         "http://api.openweathermap.org/data/2.5/uvi?lat=" +
         lat +
@@ -127,13 +142,15 @@ $(document).ready(function () {
         lon +
         "&appid=" +
         APIKey;
+        // call uv api
       $.ajax({
         url: queryURLuv,
         method: "GET",
+        // then function runs after api call
       }).then(function (object) {
+        // text displayed before UV
         var UVIndex = $("<li>").text("UV Index: ");
-        // if uv index greater than x set attribute ...
-
+        // checking uv value to add colour based on severity 
         if (object.value < 3) {
           var UVnum = $("<i class = 'mild'>").text(object.value);
         }
@@ -146,25 +163,30 @@ $(document).ready(function () {
         if (object.value > 5) {
           var UVnum = $("<i class = 'severe'>").text(object.value);
         }
-
+        // display Uv index to the page
         UVIndex.append(UVnum);
         keyDetailsList.append(UVIndex);
         storeInputs();
       });
     });
+    // call 5 day forecast API
     $.ajax({
       url: queryURLFiveDay,
       method: "GET",
     }).then(function (forecast) {
-      console.log(forecast);
+      // loop through each day
       for (var i = 0; i < 40; i++) {
         var setDay = forecast.list[i];
-
+        // removing letters from string to display desired part 
         var dateTemp = setDay.dt_txt;
         var dateString = JSON.stringify(dateTemp);
+        // display the date only
         var date = dateString.slice(1, 11);
+        // display the time only
         var time = dateString.slice(12, 20);
+        // find the time at midday and use that as the forecast weather
         if (time == "12:00:00") {
+          // get whether it is cloudy, sunny rain or snow
           var description = $("<li>").text(setDay.weather[0].main);
 
           var descriptionLi = $("<li class = 'forecastText'>");
@@ -181,23 +203,25 @@ $(document).ready(function () {
           if (description.text() == "Clouds") {
             var descriptionOf = $("<i class='fas fa-cloud'>");
           }
-
+          // get temperature
           var tempTemp = setDay.main.temp - 273;
+          // round to 2 decimal places
           tempTemp = Math.round(tempTemp * 100) / 100;
+          // temperature display 
           var temp = $("<li class = 'forecastText'>").text(
             "Temp: " + tempTemp + " C°"
           );
-
+            // get humidity and add to li with class forecastText
           var humid = $("<li class = 'forecastText'>").text(
             "Humidity: " + setDay.main.humidity + "%"
           );
-
+            // create a new div for forecast to append to 
           var newCol = $("<div class = 'col-md-2 forecast'>");
-
+            // get the name and date of the city 
           var cityDay = $("<h2>").text(forecast.city.name + " (" + date + ")");
-
+            // adding title 
           var fiveDayTitle = $("<h2>").text("5-Day Forecast");
-
+            // appending above to page
           descriptionLi.append(descriptionOf);
           newCol.append(date);
           newCol.append(descriptionLi);
@@ -207,7 +231,9 @@ $(document).ready(function () {
           $(".fiveDay").append(newCol);
         }
       }
+      // displaying date to top of page
       $(".keyDetails").prepend(cityDay);
+      // displaying title above 5 day forecast
       $(".fiveDayTitle").append(fiveDayTitle);
 
       storeInputs();
@@ -215,9 +241,11 @@ $(document).ready(function () {
   }
 
   // $(".cities").click(displayWeather);
+  // when buttons are clicked the display weather function is called
   cityBtns.forEach(function (cityBtns) {
     cityBtns.click(displayWeather);
   });
 
+  // when search button is clicked, display weather function is called
   $(".searchBtn").click(displayWeather);
 });
