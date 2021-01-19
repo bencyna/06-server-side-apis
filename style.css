@@ -1,0 +1,99 @@
+body {
+    background-color: #F5F5F5 !important;
+    font-family: 'Balsamiq Sans', cursive !important;
+}
+
+.row.no-margin {
+    margin:0 ! important;
+    padding: 0px !important;
+    }
+
+.header {
+  text-align: center;
+  background-color: #001B35;
+  color: white;
+}
+
+.form-control{
+    margin-bottom: 3%;
+    width: 70% !important;
+}
+
+.keyDetails {
+    background-color: white;
+    float: left;
+    clear: both;
+}
+
+.fiveDay {
+    float: left;
+    clear: both;
+    width: 100%;
+}
+
+ul {
+    list-style-type: none;
+    position: relative;
+    right: 10%  ;
+}
+
+.cities {
+   background-color: white;
+   border: 0px;
+   margin: 1%;
+   width: 100%;
+}
+
+.keyDetailsList {
+    position: relative;
+    left: 1px;
+}
+
+.forecast {
+    list-style-type: none;
+    background-color: #1E90FF;
+    height: 100%;
+    color: white;
+    margin: 1.5%;
+    border-color: black;
+    border: 1%;
+    border-radius: 15px;
+    /* width: 100% !important; */
+    
+}
+
+.forecastText {
+    margin: 10px 0px;
+}
+
+.searchBtn {
+    position: relative;
+    right: 14%;
+    bottom: 4px;
+    color: white;
+    background-color: #1E90FF;
+}
+
+#clearBtn {
+    color: white;
+    background-color: black;
+}
+
+.mild {
+    background-color: blue;
+    border: 10px;
+    border-radius: 15px;
+    color: white;
+}
+ .moderate {
+     background-color: yellow;
+     border: 10px;
+     border-radius: 15px;
+     color: white;
+ }
+ .severe {
+     background-color: red;
+     border: 10px;
+     border-radius: 15px;
+     color: white;
+ }
