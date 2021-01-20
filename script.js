@@ -59,30 +59,30 @@ $(document).ready(function () {
     var element = event.target;
     var index = element.parentElement.getAttribute("data-attribute");
     cities.splice(index, cities.length);
-
+3
     storeCities();
     renderCities();
   });
 
   // setting city name to an empty string
-  var cityName = "";
   // if search button is clicked city name is given the value of input
-  $(".searchBtn").click(function () {
-    cityName = $("#cityInput").val().trim();
+  // displayWeather() is called
+  $(".searchBtn").click(function (event) {
+    event.preventDefault()
+    displayWeather($("#cityInput").val().trim());
     console.log("search clicked");
   });
   // if a previoulsy searched city is clicked the value of city name is the value of the button
+  // displayWeather() is called
   cityBtns.forEach(function (cityBtns) {
-    cityBtns.click(function () {
-      cityName = cityBtns.val();
-      console.log("button clicked");
-      console.log(cityBtns.val());
+    cityBtns.click(function (event) {
+      event.preventDefault();
+      displayWeather(cityBtns.text());
     });
   });
 
   // function for ajax call and display
-  function displayWeather(event) {
-    event.preventDefault();
+  function displayWeather(cityName) { 
     // empty previous city chosen
     $(".keyDetails").empty();
     $(".fiveDayTitle").empty();
@@ -242,10 +242,15 @@ $(document).ready(function () {
 
   // $(".cities").click(displayWeather);
   // when buttons are clicked the display weather function is called
-  cityBtns.forEach(function (cityBtns) {
-    cityBtns.click(displayWeather);
-  });
+  // cityBtns.forEach(function (cityBtns) {
+  //   cityBtns.click(function(event){
+  //     event.preventDefault();
+  //     // cityBtns is the value of the buttons here
+  //     // add prevent default here 
+  //     displayWeather(cityBtns.text()); // maybe try this being the value of city buttons
+  //   });
+  // });
 
   // when search button is clicked, display weather function is called
-  $(".searchBtn").click(displayWeather);
+  // $(".searchBtn").click(displayWeather);
 });
