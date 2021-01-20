@@ -118,7 +118,7 @@ $(document).ready(function () {
       );
       // getting windspeed and adding to li element
       var windSpeed = $("<li>").text(
-        "Wind Speed: " + response.wind.speed + "unit of measurement"
+        "Wind Speed: " + response.wind.speed + " knots"
       );
       // adding ul for data to be displayed in
       var keyDetailsList = $("<ul>").attr("class", "keyDetailsList");
@@ -239,18 +239,4 @@ $(document).ready(function () {
       storeInputs();
     });
   }
-
-  // $(".cities").click(displayWeather);
-  // when buttons are clicked the display weather function is called
-  // cityBtns.forEach(function (cityBtns) {
-  //   cityBtns.click(function(event){
-  //     event.preventDefault();
-  //     // cityBtns is the value of the buttons here
-  //     // add prevent default here 
-  //     displayWeather(cityBtns.text()); // maybe try this being the value of city buttons
-  //   });
-  // });
-
-  // when search button is clicked, display weather function is called
-  // $(".searchBtn").click(displayWeather);
 });
