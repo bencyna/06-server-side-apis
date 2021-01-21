@@ -59,46 +59,46 @@ $(document).ready(function () {
     var element = event.target;
     var index = element.parentElement.getAttribute("data-attribute");
     cities.splice(index, cities.length);
-3
     storeCities();
     renderCities();
   });
 
-  // setting city name to an empty string
-  // if search button is clicked city name is given the value of input
-  // displayWeather() is called
+  // DisplayFiveDayForecast() and currentWeather() are called
   $(".searchBtn").click(function (event) {
-    event.preventDefault()
-    displayWeather($("#cityInput").val().trim());
-    console.log("search clicked");
-  });
-  // if a previoulsy searched city is clicked the value of city name is the value of the button
-  // displayWeather() is called
-  cityBtns.forEach(function (cityBtns) {
-    cityBtns.click(function (event) {
-      event.preventDefault();
-      displayWeather(cityBtns.text());
-    });
-  });
-
-  // function for ajax call and display
-  function displayWeather(cityName) { 
+    event.preventDefault();
     // empty previous city chosen
     $(".keyDetails").empty();
     $(".fiveDayTitle").empty();
     $(".fiveDay").empty();
-    // setting api key to retrieve information from
-    var APIKey = "2b07c349d7b932546c42e60806d40881";
-    queryURLKeyDetails =
-      "http://api.openweathermap.org/data/2.5/weather?q=" +
+    // value of city name is the user inout if search button is clicked
+    currentWeather($("#cityInput").val().trim());
+    displayFiveDayForecast($("#cityInput").val().trim());
+  });
+  // DisplayFiveDayForecast() and currentWeather() are called
+  cityBtns.forEach(function (cityBtns) {
+    cityBtns.click(function (event) {
+      event.preventDefault();
+      // empty previous city chosen
+      $(".keyDetails").empty();
+      $(".fiveDayTitle").empty();
+      $(".fiveDay").empty();
+
+      // if a previoulsy searched city is clicked the text of city name is the value of the button
+      displayFiveDayForecast(cityBtns.text());
+      currentWeather(cityBtns.text());
+    });
+  });
+  // setting api key to retrieve information from
+  var APIKey = "2b07c349d7b932546c42e60806d40881";
+
+  // function for ajax call and display for current weather
+  function currentWeather(cityName) {
+    var queryURLKeyDetails =
+      "https://api.openweathermap.org/data/2.5/weather?q=" +
       cityName +
       "&appid=" +
       APIKey;
-    queryURLFiveDay =
-      "https://api.openweathermap.org/data/2.5/forecast?q=" +
-      cityName +
-      "&appid=" +
-      APIKey;
+
     // ajax call to get desired information
     $.ajax({
       url: queryURLKeyDetails,
@@ -131,44 +131,63 @@ $(document).ready(function () {
       // appendning ul above to the page
       $(".keyDetails").append(keyDetailsList);
 
-      // getting latitude and longitude coordinates for uv index
-      var lat = response.coord.lat;
+      lat = response.coord.lat;
 
-      var lon = response.coord.lon;
-      var queryURLuv =
-        "http://api.openweathermap.org/data/2.5/uvi?lat=" +
-        lat +
-        "&lon=" +
-        lon +
-        "&appid=" +
-        APIKey;
-        // call uv api
-      $.ajax({
-        url: queryURLuv,
-        method: "GET",
-        // then function runs after api call
-      }).then(function (object) {
-        // text displayed before UV
-        var UVIndex = $("<li>").text("UV Index: ");
-        // checking uv value to add colour based on severity 
-        if (object.value < 3) {
-          var UVnum = $("<i class = 'mild'>").text(object.value);
-        }
-        if (3 < object.value > 5) {
-          var UVnum = $("<i class = 'moderate'>").text(object.value);
-        }
-        if (object.value < 3) {
-          var UVnum = $("<i class = 'mild'>").text(object.value);
-        }
-        if (object.value > 5) {
-          var UVnum = $("<i class = 'severe'>").text(object.value);
-        }
-        // display Uv index to the page
-        UVIndex.append(UVnum);
-        keyDetailsList.append(UVIndex);
-        storeInputs();
-      });
+      lon = response.coord.lon;
+      // calling UVindex function after currentWeather to get latitude and longitude coords
+      displayUVindex();
     });
+  };
+  // assigning lat and lon to global scope
+  var lon = "";
+  var lat = "";
+
+  // display Uv index function
+  function displayUVindex() {
+    // getting latitude and longitude coordinates for uv index
+    var queryURLuv =
+      "https://api.openweathermap.org/data/2.5/uvi?lat=" +
+      lat +
+      "&lon=" +
+      lon +
+      "&appid=" +
+      APIKey;
+    // call uv api
+    $.ajax({
+      url: queryURLuv,
+      method: "GET",
+      // then function runs after api call
+    }).then(function (object) {
+      // text displayed before UV
+      var UVIndex = $("<li>").text("UV Index: ");
+      var UVnum = "";
+      // checking uv value to add colour based on severity
+      if (object.value < 3) {
+        UVnum = $("<i class = 'mild'>").text(object.value);
+      }
+      if (3 < object.value > 5) {
+        UVnum = $("<i class = 'moderate'>").text(object.value);
+      }
+      if (object.value < 3) {
+        UVnum = $("<i class = 'mild'>").text(object.value);
+      }
+      if (object.value > 5) {
+        UVnum = $("<i class = 'severe'>").text(object.value);
+      }
+      console.log(UVnum);
+      // display Uv index to the page
+      UVIndex.append(UVnum);
+      $(".keyDetailsList").append(UVIndex);
+      storeInputs();
+    });
+  };
+  // Forecast for next 5 days function
+  function displayFiveDayForecast(cityName) {
+    queryURLFiveDay =
+      "https://api.openweathermap.org/data/2.5/forecast?q=" +
+      cityName +
+      "&appid=" +
+      APIKey;
     // call 5 day forecast API
     $.ajax({
       url: queryURLFiveDay,
@@ -177,7 +196,7 @@ $(document).ready(function () {
       // loop through each day
       for (var i = 0; i < 40; i++) {
         var setDay = forecast.list[i];
-        // removing letters from string to display desired part 
+        // removing letters from string to display desired part
         var dateTemp = setDay.dt_txt;
         var dateString = JSON.stringify(dateTemp);
         // display the date only
@@ -207,21 +226,21 @@ $(document).ready(function () {
           var tempTemp = setDay.main.temp - 273;
           // round to 2 decimal places
           tempTemp = Math.round(tempTemp * 100) / 100;
-          // temperature display 
+          // temperature display
           var temp = $("<li class = 'forecastText'>").text(
             "Temp: " + tempTemp + " C°"
           );
-            // get humidity and add to li with class forecastText
+          // get humidity and add to li with class forecastText
           var humid = $("<li class = 'forecastText'>").text(
             "Humidity: " + setDay.main.humidity + "%"
           );
-            // create a new div for forecast to append to 
+          // create a new div for forecast to append to
           var newCol = $("<div class = 'col-md-2 forecast'>");
-            // get the name and date of the city 
+          // get the name and date of the city
           var cityDay = $("<h2>").text(forecast.city.name + " (" + date + ")");
-            // adding title 
+          // adding title
           var fiveDayTitle = $("<h2>").text("5-Day Forecast");
-            // appending above to page
+          // appending above to page
           descriptionLi.append(descriptionOf);
           newCol.append(date);
           newCol.append(descriptionLi);
@@ -238,5 +257,5 @@ $(document).ready(function () {
 
       storeInputs();
     });
-  }
+  };
 });
