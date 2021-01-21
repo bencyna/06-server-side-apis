@@ -75,18 +75,16 @@ $(document).ready(function () {
     displayFiveDayForecast($("#cityInput").val().trim());
   });
   // DisplayFiveDayForecast() and currentWeather() are called
-  cityBtns.forEach(function (cityBtns) {
-    cityBtns.click(function (event) {
-      event.preventDefault();
-      // empty previous city chosen
-      $(".keyDetails").empty();
+  $(".list-items").on("click", ".cities", function(event){
+    event.preventDefault();
+    // empty previous city valuies on click
+    $(".keyDetails").empty();
       $(".fiveDayTitle").empty();
       $(".fiveDay").empty();
-
       // if a previoulsy searched city is clicked the text of city name is the value of the button
-      displayFiveDayForecast(cityBtns.text());
-      currentWeather(cityBtns.text());
-    });
+      displayFiveDayForecast($(this).val());
+      currentWeather($(this).val());
+    // });
   });
   // setting api key to retrieve information from
   var APIKey = "2b07c349d7b932546c42e60806d40881";
@@ -136,6 +134,7 @@ $(document).ready(function () {
       lon = response.coord.lon;
       // calling UVindex function after currentWeather to get latitude and longitude coords
       displayUVindex();
+      storeInputs();
     });
   };
   // assigning lat and lon to global scope
@@ -174,7 +173,6 @@ $(document).ready(function () {
       if (object.value > 5) {
         UVnum = $("<i class = 'severe'>").text(object.value);
       }
-      console.log(UVnum);
       // display Uv index to the page
       UVIndex.append(UVnum);
       $(".keyDetailsList").append(UVIndex);
