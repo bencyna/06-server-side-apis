@@ -103,6 +103,7 @@ $(document).ready(function () {
       method: "GET",
       // after ajax has been retrieved this function can execute
     }).then(function (response) {
+      console.log(response)
       // getting local temperature
       var temperatureTemp = response.main.temp - 273;
       // rounding it to 2 decimal places
